@@ -1,0 +1,27 @@
+{
+    "name": "neutronstars/database-sql",
+    "description": "Sql connector library for PHP",
+    "type": "library",
+    "license": "Apache-2.0",
+    "authors": [
+        {
+            "name": "NeutronStars",
+            "email": "pro@neutronstars.fr"
+        }
+    ],
+    "minimum-stability": "stable",
+    "autoload": {
+        "psr-4": {
+            "NeutronStars\\Database\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "NeutronStars\\DatabaseTest\\": "test/",
+            "NeutronStars\\DatabaseExemples\\": "exemples/"
+        }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.5"
+    }
+}
