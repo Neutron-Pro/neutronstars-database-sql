@@ -16,7 +16,7 @@ class QueryBuilderTest extends TestCase
         $database = $this->createMock(Database::class);
         $database->expects(self::once())->method('fetchAll')->willReturn([]);
 
-        $this->assertSame([], (new QueryExecutor($database, 'users'))->select('*')->getResults());
+        $this->assertSame([], (new QueryExecutor($database, new QueryBuilder('users')))->select('*')->getResults());
     }
 
     public function testResult(): void
@@ -26,7 +26,7 @@ class QueryBuilderTest extends TestCase
 
         $this->assertSame(
             [],
-            (new QueryExecutor($database, 'users'))
+            (new QueryExecutor($database, new QueryBuilder('users')))
                 ->select('*')
                 ->where('id=:id')
                 ->setParameters([
@@ -43,7 +43,7 @@ class QueryBuilderTest extends TestCase
         $database->expects(self::once())->method('execute')->willReturn($pdoStatement);
         $this->assertSame(
             true,
-            (new QueryExecutor($database, 'users'))
+            (new QueryExecutor($database, new QueryBuilder('users')))
                 ->delete()
                 ->where('id=:id')
                 ->setParameters([
