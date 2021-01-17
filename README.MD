@@ -12,7 +12,6 @@ composer require neutronstars/database-sql
   }
 }
 ```
-g
 #Importation
 
 ```php
@@ -34,8 +33,8 @@ $options = [
 $database = new Database('database_name', $options);
 ```
 
-SQL Request Samples
----
+#SQL Request Samples
+
 
 ##SELECT
 
