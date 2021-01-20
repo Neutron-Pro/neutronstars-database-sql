@@ -62,7 +62,12 @@ class Database
         return new QueryExecutor($this, QueryBuilder::create($queryBuilder, $alias));
     }
 
-    public function fetch(string $query, array $parameters = []): array
+    /**
+     * @param string $query
+     * @param array $parameters
+     * @return array|bool
+     */
+    public function fetch(string $query, array $parameters = [])
     {
         return $this->execute($query, $parameters)->fetch();
     }
