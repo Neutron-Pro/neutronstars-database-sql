@@ -95,7 +95,8 @@ class QueryExecutor implements Query
 
     public function getResult(): ?array
     {
-        return $this->database->fetch($this->queryBuilder->build(), $this->parameters);
+        $result = $this->database->fetch($this->queryBuilder->build(), $this->parameters);
+        return $result ? $result : null;
     }
 
     public function getResults(): array

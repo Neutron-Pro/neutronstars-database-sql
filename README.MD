@@ -8,7 +8,7 @@ composer require neutronstars/database-sql
 ```json
 {
   "require": {
-    "neutronstars/database-sql": ">=1.0.0"
+    "neutronstars/database-sql": ">=1.0.*"
   }
 }
 ```
