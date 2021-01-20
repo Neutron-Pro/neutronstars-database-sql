@@ -47,6 +47,11 @@ class Database
         return $data;
     }
 
+    public function getLastInsertId(string $name = null): string
+    {
+        return $this->pdo->lastInsertId($name);
+    }
+
     public function query(string $table): QueryExecutor
     {
         return new QueryExecutor($this, new QueryBuilder($table));
@@ -85,5 +90,15 @@ class Database
         }
         $success = $query->execute($parameters);
         return $success ? $query : null;
+    }
+
+    public function getErrors(): array
+    {
+        return $this->pdo->errorInfo();
+    }
+
+    public function getErrorCode()
+    {
+        return $this->pdo->errorCode();
     }
 }
