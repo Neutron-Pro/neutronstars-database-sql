@@ -1,6 +1,6 @@
-#Database Library For PHP
+# Database Library For PHP
 
-#Installation
+# Installation
 
 ```
 composer require neutronstars/database-sql
@@ -12,7 +12,8 @@ composer require neutronstars/database-sql
   }
 }
 ```
-#Importation
+
+# Importation
 
 ```php
 <?php
@@ -20,7 +21,7 @@ composer require neutronstars/database-sql
   use NeutronStars\Database\Database;
 ```
 
-#Connection
+# Connection
 
 ```php
 $options = [
@@ -33,10 +34,10 @@ $options = [
 $database = new Database('database_name', $options);
 ```
 
-#SQL Request Samples
+# SQL Request Samples
 
 
-##SELECT
+## SELECT
 
 ```sql
 SELECT * FROM table;
@@ -95,8 +96,6 @@ $results = $database->query('table')
 SELECT * FROM table GROUP BY name;
 ```
 ```php
-use NeutronStars\Database\Query;
-
 $results = $database->query('table')
                    ->select('*')
                    ->groupBy('name')
@@ -113,13 +112,14 @@ use NeutronStars\Database\Query;
 
 $results = $database->query('table t1')
                    ->select('*')
-                   ->leftJoin('table2 t2', 't1.id = t2.id')
+                   ->join('table2 t2', 't1.id = t2.id', Query::LEFT_JOIN)
                    ->getResults();
 ```
 
 ---
 
-##DELETE
+## DELETE
+
 ```sql
 DELETE FROM table WHERE id=4;
 ```
@@ -135,7 +135,8 @@ $database->query('table')
 
 ---
 
-##UPDATE
+## UPDATE
+
 ```sql
 UPDATE table SET name='Doe' WHERE lastname='John';
 ```
@@ -152,7 +153,8 @@ $database->query('table')
 
 ---
 
-##INSERT INTO
+## INSERT INTO
+
 ```sql
 INSERT INTO table (name,lastname) VALUES (:name1,:lastname1), (:name2,:lastname2);
 ```
@@ -184,7 +186,7 @@ $database->query('table')
 
 ---
 
-##SUB REQUEST
+## SUB REQUEST
 
 ```sql
 SELECT * FROM (SELECT * FROM table) AS test;
@@ -202,14 +204,31 @@ SELECT * FROM users u LEFT JOIN (SELECT * from test) AS t ON t.id=u.id WHERE u.p
 ```
 ```php
 use NeutronStars\Database\QueryBuilder;
+use NeutronStars\Database\Query;
 
 $builder = (new QueryBuilder('test'))->select('*');
 $results = $database->query('users u')
                     ->select('*')
-                    ->leftJoinQuery($builder, 't', 't.id=u.id')
+                    ->joinQuery($builder, 't', 't.id=u.id', Query::LEFT_JOIN)
                     ->where('u.points>:points')
                     ->setParameters([
                        ':points'     => 5
                     ])
                     ->getResults();
+```
+
+---
+
+## UNION
+
+```sql
+SELECT u.* FROM users u UNION ALL SELECT p.* FROM profile p;
+```
+
+```php
+$results = $database->query('users')
+                   ->select('u.*')
+                   ->union('profile p', true)
+                   ->select('p.*')
+                   ->getResults();
 ```
