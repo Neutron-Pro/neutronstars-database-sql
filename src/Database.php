@@ -17,7 +17,9 @@ class Database
      *   'port': 3306,
      *   'user': 'root',
      *   'password': '',
-     *   'charset': 'utf8mb4'
+     *   'charset': 'utf8mb4',
+     *   'fetchMode': 2,
+     *   'errorMode': 1
      * ]
      *
      * @param string $dbname
@@ -32,18 +34,25 @@ class Database
     {
         $this->pdo = new PDO('mysql:host='.$data['url'].';port='.$data['port'].';dbname='.$dbname, $data['user'], $data['password'], array(
             PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES '.$data['charset'],
-            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_WARNING
+            PDO::ATTR_DEFAULT_FETCH_MODE => $data['fetchMode'],
+            PDO::ATTR_ERRMODE => $data['errorMode']
         ));
+    }
+
+    public function getPDO(): PDO
+    {
+        return $this->pdo;
     }
 
     private function fillDefaultData(array $data = []): array
     {
-        if(!isset($data['url'])) { $data['url']   = '127.0.0.1'; }
-        if(!isset($data['port'])) { $data['port'] = 3306; }
-        if(!isset($data['user'])) { $data['user'] = 'root'; }
-        if(!isset($data['password'])) { $data['password'] = ''; }
-        if(!isset($data['charset'])) { $data['charset'] = 'utf8mb4'; }
+        $data['url']       = $data['url']       ?? '127.0.0.1';
+        $data['port']      = $data['port']      ?? 3306;
+        $data['user']      = $data['user']      ?? 'root';
+        $data['password']  = $data['password']  ?? '';
+        $data['charset']   = $data['charset']   ?? 'utf8mb4';
+        $data['fetchMode'] = $data['fetchMode'] ?? PDO::FETCH_ASSOC;
+        $data['errorMode'] = $data['errorMode'] ?? PDO::ERRMODE_WARNING;
         return $data;
     }
 
@@ -65,13 +74,18 @@ class Database
     /**
      * @param string $query
      * @param array $parameters
-     * @return array|bool
+     * @return array|bool|Object|null
      */
     public function fetch(string $query, array $parameters = [])
     {
         return $this->execute($query, $parameters)->fetch();
     }
 
+    /**
+     * @param string $query
+     * @param array $parameters
+     * @return array[]|Object[]
+     */
     public function fetchAll(string $query, array $parameters = []): array
     {
         return $this->execute($query, $parameters)->fetchAll();

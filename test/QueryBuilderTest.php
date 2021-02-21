@@ -22,17 +22,16 @@ class QueryBuilderTest extends TestCase
     public function testResult(): void
     {
         $database = $this->createMock(Database::class);
-        $database->expects(self::once())->method('fetch')->willReturn([]);
 
         $this->assertSame(
-            [],
+            'SELECT * FROM users WHERE id=:id',
             (new QueryExecutor($database, new QueryBuilder('users')))
                 ->select('*')
                 ->where('id=:id')
                 ->setParameters([
                     ':id' => 1
                 ])
-                ->getResult()
+                ->build()
         );
     }
 
@@ -133,7 +132,7 @@ class QueryBuilderTest extends TestCase
             "SELECT * FROM users u LEFT JOIN profile p ON p.id=u.id WHERE u.id=:id",
             (new QueryBuilder('users u'))
                 ->select('*')
-                ->leftJoin('profile p', 'p.id=u.id')
+                ->join('profile p', 'p.id=u.id')
                 ->where('u.id=:id')
                 ->build()
         );
@@ -145,8 +144,8 @@ class QueryBuilderTest extends TestCase
             "SELECT * FROM users u LEFT JOIN profile p ON p.id=u.id LEFT JOIN roles r ON r.user=u.id WHERE u.id=:id",
             (new QueryBuilder('users u'))
                 ->select('*')
-                ->leftJoin('profile p', 'p.id=u.id')
-                ->leftJoin('roles r', 'r.user=u.id')
+                ->join('profile p', 'p.id=u.id')
+                ->join('roles r', 'r.user=u.id')
                 ->where('u.id=:id')
                 ->build()
         );
@@ -170,7 +169,7 @@ class QueryBuilderTest extends TestCase
             "SELECT * FROM users LEFT JOIN (SELECT * FROM profiles) AS test ON test.id=users.id",
             (new QueryBuilder('users'))
                 ->select('*')
-                ->leftJoinQuery($subQuery, 'test', 'test.id=users.id')
+                ->joinQuery($subQuery, 'test', 'test.id=users.id')
                 ->build()
         );
     }
@@ -214,6 +213,27 @@ class QueryBuilderTest extends TestCase
             (new QueryBuilder('users'))
                 ->insertInto('name, email', ':n1,:e1')
                 ->onDuplicateKeyUpdate('name=:n1,email=:e1')
+                ->build()
+        );
+    }
+
+    public function testUnionAll(): void
+    {
+        $database = $this->createMock(Database::class);
+
+        $this->assertSame(
+            'SELECT * FROM users WHERE id=:id UNION ALL SELECT * FROM profile WHERE id=:id AND name=:name',
+            (new QueryExecutor($database, new QueryBuilder('users')))
+                ->select('*')
+                ->where('id=:id')
+                ->union('profile', true)
+                ->select('*')
+                ->where('id=:id')
+                ->andWhere('name=:name')
+                ->setParameters([
+                    ':id' => 1,
+                    ':name' => 'Test'
+                ])
                 ->build()
         );
     }

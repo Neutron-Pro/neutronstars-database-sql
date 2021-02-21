@@ -57,20 +57,41 @@ class QueryBuilder implements Query
         return $this;
     }
 
-    public function leftJoin(string $table, string $condition = ''): self
+    public function join(string $table, string $condition = '',
+                         string $join = self::LEFT_JOIN, bool $outer = false): self
     {
-        $this->leftJoin .= ' LEFT JOIN '.$table.(!empty($condition) ? ' ON '.$condition : '');
+        $this->leftJoin .= ' '.$join.($outer ? ' OUTER ' : '').' JOIN '
+            .$table.(!empty($condition) ? ' ON '.$condition : '');
         return $this;
     }
 
-    public function leftJoinQuery(QueryBuilder $builder, string $alias, string $condition = ''): self
+    public function joinQuery(QueryBuilder $builder, string $alias, string $condition = '',
+                              string $join = self::LEFT_JOIN, bool $outer = false): self
     {
-        return $this->leftJoin('('.$builder->build().') AS '.$alias, $condition);
+        return $this->join('('.$builder->build().') AS '.$alias, $condition, $join, $outer);
     }
 
     public function where(string $where): self
     {
         $this->where = ' WHERE '.$where;
+        return $this;
+    }
+
+    public function andWhere(string $where): self
+    {
+        $this->where .= ' AND '.$where;
+        return $this;
+    }
+
+    public function whereIn(string $column, QueryBuilder $builder, bool $in = true): self
+    {
+        $this->where = ' WHERE '.$column.' '.(!$in ? 'NOT' : '').' IN ('.$builder->build().')';
+        return $this;
+    }
+
+    public function andWhereIn(string $column, QueryBuilder $builder, bool $in = true): self
+    {
+        $this->where .= ' AND '.$column.' '.(!$in ? 'NOT' : '').' IN ('.$builder->build().')';
         return $this;
     }
 
@@ -83,6 +104,24 @@ class QueryBuilder implements Query
     public function having(string $having): self
     {
         $this->having = ' HAVING '.$having;
+        return $this;
+    }
+
+    public function andHaving(string $having): self
+    {
+        $this->having .= ' AND '.$having;
+        return $this;
+    }
+
+    public function havingIn(string $column, QueryBuilder $builder, bool $in = true): self
+    {
+        $this->having = ' HAVING '.$column.' '.(!$in ? 'NOT' : '').' IN ('.$builder->build().')';
+        return $this;
+    }
+
+    public function andHavingIn(string $column, QueryBuilder $builder, bool $in = true): self
+    {
+        $this->having .= ' AND '.$column.' '.(!$in ? 'NOT' : '').' IN ('.$builder->build().')';
         return $this;
     }
 
