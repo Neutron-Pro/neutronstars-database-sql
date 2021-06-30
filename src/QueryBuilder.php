@@ -95,9 +95,9 @@ class QueryBuilder implements Query
         return $this;
     }
 
-    public function groupBy(string $column): self
+    public function groupBy(string $columns): self
     {
-        $this->groupBy = ' GROUP BY '.$column;
+        $this->groupBy = ' GROUP BY '.$columns;
         return $this;
     }
 
@@ -127,7 +127,11 @@ class QueryBuilder implements Query
 
     public function orderBy(string $column, string $order = self::ORDER_BY_ASC): self
     {
-        $this->orderBy = ' ORDER BY '.$column.' '.$order;
+        if (empty($this->orderBy)) {
+            $this->orderBy = ' ORDER BY '.$column.' '.$order;
+        } else {
+            $this->orderBy .= ', ' . $column . ' ' . $order;
+        }
         return $this;
     }
 
