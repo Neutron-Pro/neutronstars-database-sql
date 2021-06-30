@@ -3,7 +3,6 @@
     "description": "Sql connector library for PHP",
     "type": "library",
     "license": "Apache-2.0",
-    "version": "1.0.6",
     "authors": [
         {
             "name": "NeutronStars",
